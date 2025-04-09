@@ -1,0 +1,13 @@
+test:
+  locustfile: locustfiles/api_user.py
+  shape: shapes/ramp_up_shape.py
+
+env:
+  STEP_TIME: 5
+  STEP_LOAD: 10
+  SPAWN_RATE: 3
+  MAX_USERS: 10
+
+options:
+  headless: true
+  run_time: 10s

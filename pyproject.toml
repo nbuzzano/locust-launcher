@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "yape"
+version = "0.1.0"
+description = ""
+authors = ["nbuzzano <nicolas.buzzano@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+locust = "^2.34.0"
+yml = "^0.0.1"
+pyyml = "^0.0.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.locust]
+host = "https://jsonplaceholder.typicode.com"
