@@ -49,7 +49,9 @@ Custom Shapes:
 - WaveShape: "Simula picos horarios. Aumenta y disminuye en ciclos como un flujo de usuarios durante el día."
 - StepByStepShape: "Ideal para simular sesiones conocidas: login → navegación → checkout"
 
-![shapes](yape/resources/shapes.png)
+Img de referecia:
+
+![shapes](resources/shapes.png)
 
 # Last comments
 

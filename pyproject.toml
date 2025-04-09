@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "yape"
+name = "locust-launcher"
 version = "0.1.0"
 description = ""
 authors = ["nbuzzano <nicolas.buzzano@gmail.com>"]
