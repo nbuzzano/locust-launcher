@@ -26,6 +26,7 @@ def load_config(path):
 
 def export_env_vars(env):
     for key, val in env.items():
+        print(f"🚀 Exportando variable de entorno: {key}={val}")
         os.environ[key] = str(val)
 
 def build_locust_command(locustfile, shape, options={}):

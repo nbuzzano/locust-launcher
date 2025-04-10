@@ -1,0 +1,24 @@
+test:
+  locustfile: locustfiles/api_user.py
+  shape: shapes/wave_shape.py
+
+env:
+  # Paso 1 - login
+  STEP1_DURATION: 60
+  STEP1_USERS: 10
+  STEP1_SPAWN: 5
+
+  # Paso 2 - navegación
+  STEP2_DURATION: 60
+  STEP2_USERS: 50
+  STEP2_SPAWN: 10
+
+  # Paso 3 - checkout
+  STEP3_DURATION: 30
+  STEP3_USERS: 100
+  STEP3_SPAWN: 20
+
+  # Paso 4 - logout
+  STEP4_DURATION: 30
+  STEP4_USERS: 20
+  STEP4_SPAWN: 10
