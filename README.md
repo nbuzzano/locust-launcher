@@ -1,7 +1,6 @@
 # Locust Launcher
 
 - Launcher pensado para crear API test de forma simple y rápida con Locust. 
-- En ppio pensado para usarlo via CLI y no la UI que Locust ofrece.
 
 # HOW TO USE
 
@@ -22,10 +21,6 @@ env:
   STEP_LOAD: 10
   SPAWN_RATE: 3
   MAX_USERS: 50
-
-options:
-  headless: true
-  run_time: 10s
 ```
 
 Donde:
@@ -35,9 +30,16 @@ Donde:
 
 # RUN & REPORTS
 
+### CLI
+
 Una vez configurado el launcher, solo hay que ejecutar `python launcher.py` y se creara la carpeta de resultados en la carpeta `reports/`. Donde se va a guardar por cada corrida, el reporte de Locust junto al archivo de configuración usado en ese momento.
 
 Como opcional se puede especificar el parametro --configs_path para indicar la carpeta donde se encuentran los archivos de configuración. Esto puede ser util en caso de que no quieras ejecutar todos los API test, si solo quieres probar unos pocos en particular.
+
+### UI
+Si se desea se pude levantar la UI de Locust ejecutando `python launcher.py --enable_ui`. Se va a levantar en el puerto 8089. 
+
+Esta opcional es solo para hacer pruebas basicas y validar como funcionan los shapes ya que al ejecutar `--enable_ui` no va a leer los [configs/](configs/) files si no que levanta directamente los API tests. 
 
 # Shapes
 

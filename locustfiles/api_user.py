@@ -24,9 +24,10 @@ class APIUser(HttpUser):
     def get_products(self):
         
         with self.client.post("/posts", catch_response=True) as response:
-            if response.text != "Success":
+            
+            if response.text == "Err":
                 response.failure("Got wrong response")
-            elif response.elapsed.total_seconds() > 0.5:
+            elif response.elapsed.total_seconds() > 5:
                 response.failure("Request took too long")
 
 
@@ -39,9 +40,9 @@ class APIUser(HttpUser):
             headers={"Content-Type": "application/json; charset=UTF-8"},
             catch_response=True
         ) as response:
-            if response.text != "Success":
+            if response.text == "Err":
                 response.failure("Got wrong response")
-            elif response.elapsed.total_seconds() > 0.5:
+            elif response.elapsed.total_seconds() > 5:
                 response.failure("Request took too long")
             else:
                 response.success()

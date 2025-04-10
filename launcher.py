@@ -15,6 +15,9 @@ def parse_args():
     parser.add_argument(
         "--configs_path", type=str, help="Path donde se encuentran los archivos de configuración", default=CONFIG_DIR
     )
+    parser.add_argument(
+        "--enable_ui", action="store_true", help="Ejecutar Locust UI"
+    )
     return parser.parse_args()
 
 def load_config(path):
@@ -25,8 +28,9 @@ def export_env_vars(env):
     for key, val in env.items():
         os.environ[key] = str(val)
 
-def build_locust_command(locustfile, shape, options):
+def build_locust_command(locustfile, shape, options={}):
     _now = dt.now().strftime('%Y%m%d_%H%M%S')
+
     output_dir = f"reports/{Path(locustfile).stem}/{Path(shape).stem}/{_now}/"
     os.makedirs(os.path.dirname(output_dir), exist_ok=True)  # crea carpeta si no existe
 
@@ -38,52 +42,56 @@ def build_locust_command(locustfile, shape, options):
         "--reset-stats" # Reset statistics once spawning has been completed.
     ]
 
-    if options.get("headless"):
+    if options.get("headless", True):
         cmd.append("--headless") # Disable the web interface, and start the test immediately.
-
-    # if "users" in options:
-    #     cmd += ["-u", str(options["users"])]
-    # if "spawn_rate" in options:
-    #     cmd += ["-r", str(options["spawn_rate"])]
-    # if "run_time" in options:
-    #     cmd += ["-t", str(options["run_time"])]
+    else:
+        cmd.append("--class-picker")
 
     return output_dir, cmd
 
-def run(cmd, config_file, output_dir):
-    
-    # Copiar el archivo YML al mismo folder de resultados
-    shutil.copy(config_file, os.path.join(output_dir, os.path.basename(config_file)))
+def run(cmd, config_file):
 
     print(f"🚀 Ejecutando test: {os.path.basename(config_file)}")
     print("   ➤ Comando:", " ".join(cmd))
     subprocess.run(cmd)
 
-def run_all_configs(configs_path=CONFIG_DIR):
+def run_all_configs(configs_path=CONFIG_DIR, enable_ui=False):
     config_files = sorted(glob(os.path.join(configs_path, "*.yml")))
 
     if not config_files:
         print("⚠️  No se encontraron archivos de configuración en 'configs/'")
         return
 
-    for config_file in config_files:
-        print(f"\n📄 Cargando config: {config_file}")
-        config = load_config(config_file)
+    if enable_ui:
+        print(f"\n📄 enable_ui: {enable_ui}")
+        options = {"headless": False}
+        _, cmd = build_locust_command("locustfiles/", "shapes/", options)
+        run(cmd, "configs/")
+    else:
+        config_files_len = len(config_files)
+        print(f"📄 Se encontraron {config_files_len} archivos de configuración.")
+        i = 0
+        for config_file in config_files:
+            i += 1
+            print(f"\n📄 Cargando config ({i}/{config_files_len}): {config_file}")
+            config = load_config(config_file)
 
-        locustfile = config["test"]["locustfile"]
-        shape = config["test"]["shape"]
-        env = config.get("env", {})
-        options = config.get("options", {})
+            locustfile = config["test"]["locustfile"]
+            shape = config["test"]["shape"]
+            env = config.get("env", {})
 
-        export_env_vars(env)
-        output_dir, cmd = build_locust_command(locustfile, shape, options)
+            export_env_vars(env)
+            output_dir, cmd = build_locust_command(locustfile, shape)
 
-        run(cmd, config_file, output_dir)
+            # Copiar el archivo YML al mismo folder de resultados
+            shutil.copy(config_file, os.path.join(output_dir, os.path.basename(config_file)))
 
-        print("⏱ Esperando 5 segundos antes del siguiente test...\n")
-        time.sleep(5)
+            run(cmd, config_file)
+
+            print("⏱ Esperando 5 segundos antes del siguiente test...\n")
+            time.sleep(5)
 
 
 if __name__ == "__main__":
     args = parse_args()
-    run_all_configs(args.configs_path)
+    run_all_configs(args.configs_path, args.enable_ui)
