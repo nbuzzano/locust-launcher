@@ -7,4 +7,3 @@ env:
   STEP_LOAD: 10
   SPAWN_RATE: 3
   MAX_USERS: 100
-  TIME_LIMIT: 5

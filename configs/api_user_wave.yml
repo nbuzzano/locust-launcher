@@ -1,6 +1,6 @@
 test:
   locustfile: locustfiles/api_user.py
-  shape: shapes/step_by_step_shape.py
+  shape: shapes/wave_shape.py
 
 env:
   CYCLE_DURATION: 60

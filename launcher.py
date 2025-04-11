@@ -18,6 +18,9 @@ def parse_args():
     parser.add_argument(
         "--enable_ui", action="store_true", help="Ejecutar Locust UI"
     )
+    parser.add_argument(
+        "--latest", action="store_true", help="Guardar en latest/ el reporte mas reciente"
+    )
     return parser.parse_args()
 
 def load_config(path):
@@ -29,18 +32,20 @@ def export_env_vars(env):
         print(f"🚀 Exportando variable de entorno: {key}={val}")
         os.environ[key] = str(val)
 
-def build_locust_command(locustfile, shape, options={}):
-    _now = dt.now().strftime('%Y%m%d_%H%M%S')
-
-    output_dir = f"reports/{Path(locustfile).stem}/{Path(shape).stem}/{_now}/"
+def build_locust_command(locustfile, shape, options={}, latest=False):
+    dir = dt.now().strftime('%Y%m%d_%H%M%S')
+    if latest:
+        dir = "latest"
+        
+    output_dir = f"reports/{Path(locustfile).stem}/{Path(shape).stem}/{dir}/"
     os.makedirs(os.path.dirname(output_dir), exist_ok=True)  # crea carpeta si no existe
 
     cmd = [
         "locust",
         "-f", f"{locustfile},{shape}",
         "--csv", f"{output_dir}/results",
+        "--html", f"{output_dir}/charts.html",
         "--only-summary", # Disable periodic printing of request stats during --headless run
-        "--reset-stats" # Reset statistics once spawning has been completed.
     ]
 
     if options.get("headless", True):
@@ -56,7 +61,7 @@ def run(cmd, config_file):
     print("   ➤ Comando:", " ".join(cmd))
     subprocess.run(cmd)
 
-def run_all_configs(configs_path=CONFIG_DIR, enable_ui=False):
+def run_all_configs(configs_path=CONFIG_DIR, enable_ui=False, latest=False):
     config_files = sorted(glob(os.path.join(configs_path, "*.yml")))
 
     if not config_files:
@@ -66,7 +71,7 @@ def run_all_configs(configs_path=CONFIG_DIR, enable_ui=False):
     if enable_ui:
         print(f"\n📄 enable_ui: {enable_ui}")
         options = {"headless": False}
-        _, cmd = build_locust_command("locustfiles/", "shapes/", options)
+        _, cmd = build_locust_command("locustfiles/", "shapes/", options, latest)
         run(cmd, "configs/")
     else:
         config_files_len = len(config_files)
@@ -82,7 +87,7 @@ def run_all_configs(configs_path=CONFIG_DIR, enable_ui=False):
             env = config.get("env", {})
 
             export_env_vars(env)
-            output_dir, cmd = build_locust_command(locustfile, shape)
+            output_dir, cmd = build_locust_command(locustfile, shape, latest=latest)
 
             # Copiar el archivo YML al mismo folder de resultados
             shutil.copy(config_file, os.path.join(output_dir, os.path.basename(config_file)))
@@ -95,4 +100,4 @@ def run_all_configs(configs_path=CONFIG_DIR, enable_ui=False):
 
 if __name__ == "__main__":
     args = parse_args()
-    run_all_configs(args.configs_path, args.enable_ui)
+    run_all_configs(args.configs_path, args.enable_ui, args.latest)
