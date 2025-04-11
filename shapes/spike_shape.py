@@ -14,11 +14,11 @@ class SpikeShape(BaseLoadTestShape):
 
     spike_users = int(os.getenv("SPIKE_PEAK_USERS", 200))
     spike_spawn_rate = int(os.getenv("SPIKE_PEAK_SPAWN", 50))
-    spike_duration = int(os.getenv("SPIKE_PEAK_DURATION", 20))  # desde t=30 a t=60
+    spike_duration = int(os.getenv("SPIKE_PEAK_DURATION", 20))
 
     post_spike_users = int(os.getenv("SPIKE_POST_USERS", 10))
     post_spike_spawn_rate = int(os.getenv("SPIKE_POST_SPAWN", 10))
-    post_spike_duration = int(os.getenv("SPIKE_POST_DURATION", 30))  # desde t=60 a t=90
+    post_spike_duration = int(os.getenv("SPIKE_POST_DURATION", 30))
 
     total_duration = pre_spike_duration + spike_duration + post_spike_duration
 

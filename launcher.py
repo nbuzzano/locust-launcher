@@ -33,11 +33,11 @@ def export_env_vars(env):
         os.environ[key] = str(val)
 
 def build_locust_command(locustfile, shape, options={}, latest=False):
-    dir = dt.now().strftime('%Y%m%d_%H%M%S')
+    time_dir = dt.now().strftime('%Y%m%d_%H%M%S')
     if latest:
-        dir = "latest"
+        time_dir = "latest"
         
-    output_dir = f"reports/{Path(locustfile).stem}/{Path(shape).stem}/{dir}/"
+    output_dir = f"reports/{Path(locustfile).stem}/{Path(shape).stem}/{time_dir}/"
     os.makedirs(os.path.dirname(output_dir), exist_ok=True)  # crea carpeta si no existe
 
     cmd = [
