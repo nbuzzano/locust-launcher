@@ -1,4 +1,22 @@
+import uuid
+import datetime
+import json
+import logging
+
 from locust import HttpUser, task, between, constant
+
+logging.basicConfig(level=logging.INFO)
+
+def store(payload: dict):
+    timestamp = datetime.datetime.utcnow().isoformat()
+    request_id = str(uuid.uuid4())
+    payload["request_id"] = request_id
+    payload["timestamp"] = timestamp
+    
+    with open("requests_sent.jsonl", "a") as f:
+        f.write(json.dumps(payload) + "\n")
+
+    logging.info(f"📦 Evento guardado con ID {payload['request_id']}")
 
 # A user class represents one type of user/scenario for your system. 
 # When you do a test run you specify the number of concurrent users you want to
@@ -19,10 +37,9 @@ class APIUser(HttpUser):
         }
     
     # Methods decorated with @task are the core of your locust file. For every running User, 
-    # Locust creates a greenlet (a coroutine or “micro-thread”), that will call those methods. 
+    # Locust creates a greenlet (a coroutine or “micro-thread”), that will call those methods.
     @task(2)
     def get_products(self):
-        
         with self.client.post("/posts", catch_response=True) as response:
             
             if response.text == "Err":
@@ -34,9 +51,12 @@ class APIUser(HttpUser):
     @task(1)
     def create_order(self):
 
+        payload = {"title": "foo","body": "bar","userId": 1}
+        store(payload, task="create_order")
+        
         with self.client.post(
             "/posts",
-            json={"title": "foo","body": "bar","userId": 1},
+            json=payload,
             headers={"Content-Type": "application/json; charset=UTF-8"},
             catch_response=True
         ) as response:
